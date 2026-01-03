@@ -6,7 +6,7 @@
 /*   By: aalkhati <aalkhati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/03 04:29:11 by aalkhati          #+#    #+#             */
-/*   Updated: 2026/01/03 05:07:46 by aalkhati         ###   ########.fr       */
+/*   Updated: 2026/01/03 05:14:29 by aalkhati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,13 +33,13 @@ void	sa(t_push_swap *ps, int print)
 }
 void	sb(t_push_swap *ps, int print)
 {
-	if (ps->stack_a->size < 2)
+	if (ps->stack_b->size < 2)
 		return ;
 	swap_top_two(ps->stack_b);
 	if (print)
-		ft_printf("sa\n");
+		ft_printf("sb\n");
 }
-void ss(t_push_swap *ps, int print)
+void	ss(t_push_swap *ps)
 {
 	sa(ps, 0);
 	sb(ps, 0);
