@@ -6,12 +6,21 @@
 /*   By: mrida <mrida@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/13 00:30:46 by mrida             #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2026/01/03 04:17:07 by mrida            ###   ########.fr       */
+=======
+/*   Updated: 2026/01/03 05:12:38 by aalkhati         ###   ########.fr       */
+>>>>>>> refs/remotes/origin/master
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PUSH_SWAP_H
 # define PUSH_SWAP_H
+
+# include "../ft_printf/ft_printf.h"
+# include "../libft/libft.h"
+# include <stdlib.h>
+# include <unistd.h>
 
 typedef struct s_node
 {
@@ -48,5 +57,50 @@ typedef struct s_push_swap
 	double			disorder;
 	t_strategy		strategy;
 }					t_push_swap;
+
+/* ========== PARSING ========== */
+void				parse_args(t_push_swap *ps, int argc, char **argv);
+void				validate_input(t_push_swap *ps);
+
+/* ========== STACK INIT ========== */
+t_stack				*init_stack(void);
+t_node				*create_node(int value);
+void				free_stack(t_stack *stack);
+void				free_push_swap(t_push_swap *ps);
+
+/* ========== STACK OPERATIONS ========== */
+void				push_to_stack(t_stack *stack, t_node *node);
+t_node				*detach_top(t_stack *stack);
+
+/* ========== OPERATIONS - SWAP ========== */
+void				sa(t_push_swap *ps, int print);
+void				sb(t_push_swap *ps, int print);
+void				ss(t_push_swap *ps);
+
+/* ========== OPERATIONS - PUSH ========== */
+void				pa(t_push_swap *ps);
+void				pb(t_push_swap *ps);
+
+/* ========== OPERATIONS - ROTATE ========== */
+void				ra(t_push_swap *ps, int print);
+void				rb(t_push_swap *ps, int print);
+void				rr(t_push_swap *ps);
+
+/* ========== OPERATIONS - REVERSE ========== */
+void				rra(t_push_swap *ps, int print);
+void				rrb(t_push_swap *ps, int print);
+void				rrr(t_push_swap *ps);
+
+/* ========== ALGORITHMS ========== */
+void				simple_sort(t_push_swap *ps);
+void				medium_sort(t_push_swap *ps);
+void				complex_sort(t_push_swap *ps);
+void				adaptive_sort(t_push_swap *ps);
+
+/* ========== UTILS ========== */
+int					is_sorted(t_stack *stack);
+double				calculate_disorder(t_stack *stack);
+void				assign_indices(t_stack *stack);
+void				print_error(void);
 
 #endif
