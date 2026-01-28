@@ -1,43 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   push.c                                             :+:      :+:    :+:   */
+/*   free_split.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aalkhati <aalkhati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/03 04:23:21 by mrida             #+#    #+#             */
-/*   Updated: 2026/01/28 18:45:52 by aalkhati         ###   ########.fr       */
+/*   Created: 2026/01/28 19:52:16 by aalkhati          #+#    #+#             */
+/*   Updated: 2026/01/28 19:52:17 by aalkhati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/push_swap.h"
 
-static void	push(t_stack *from, t_stack *to)
+void	free_split(char **split)
 {
-	t_node	*node;
+	int	i;
 
-	if (from->size == 0)
+	if (!split)
 		return ;
-	node = from->top;
-	from->top = node->next;
-	from->size--;
-	node->next = to->top;
-	to->top = node;
-	to->size++;
-}
-
-void	pa(t_push_swap *ps)
-{
-	if (ps->stack_b->size == 0)
-		return ;
-	push(ps->stack_b, ps->stack_a);
-	ft_printf("pa\n");
-}
-
-void	pb(t_push_swap *ps)
-{
-	if (ps->stack_a->size == 0)
-		return ;
-	push(ps->stack_a, ps->stack_b);
-	ft_printf("pb\n");
+	i = 0;
+	while (split[i])
+	{
+		free(split[i]);
+		i++;
+	}
+	free(split);
 }

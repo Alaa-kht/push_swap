@@ -3,14 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   push_swap.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrida <mrida@student.42.fr>                +#+  +:+       +#+        */
+/*   By: aalkhati <aalkhati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/13 00:30:46 by mrida             #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2026/01/03 04:17:07 by mrida            ###   ########.fr       */
-=======
-/*   Updated: 2026/01/03 05:12:38 by aalkhati         ###   ########.fr       */
->>>>>>> refs/remotes/origin/master
+/*   Created: 2026/01/21 20:07:34 by aalkhati          #+#    #+#             */
+/*   Updated: 2026/01/28 19:52:49 by aalkhati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,5 +98,6 @@ int					is_sorted(t_stack *stack);
 double				calculate_disorder(t_stack *stack);
 void				assign_indices(t_stack *stack);
 void				print_error(void);
+void				free_split(char **split);
 
 #endif

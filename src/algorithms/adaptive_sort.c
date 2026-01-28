@@ -1,43 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   push.c                                             :+:      :+:    :+:   */
+/*   adaptive_sort.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aalkhati <aalkhati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/03 04:23:21 by mrida             #+#    #+#             */
-/*   Updated: 2026/01/28 18:45:52 by aalkhati         ###   ########.fr       */
+/*   Created: 2026/01/28 18:38:28 by aalkhati          #+#    #+#             */
+/*   Updated: 2026/01/28 18:39:46 by aalkhati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/push_swap.h"
 
-static void	push(t_stack *from, t_stack *to)
+void	adaptive_sort(t_push_swap *ps)
 {
-	t_node	*node;
+	int	size;
 
-	if (from->size == 0)
+	if (!ps || !ps->stack_a)
 		return ;
-	node = from->top;
-	from->top = node->next;
-	from->size--;
-	node->next = to->top;
-	to->top = node;
-	to->size++;
-}
-
-void	pa(t_push_swap *ps)
-{
-	if (ps->stack_b->size == 0)
+	size = ps->stack_a->size;
+	if (size <= 1)
 		return ;
-	push(ps->stack_b, ps->stack_a);
-	ft_printf("pa\n");
-}
-
-void	pb(t_push_swap *ps)
-{
-	if (ps->stack_a->size == 0)
-		return ;
-	push(ps->stack_a, ps->stack_b);
-	ft_printf("pb\n");
+	else if (size == 2)
+		simple_sort(ps);
+	else if (size == 3)
+		simple_sort(ps);
+	else if (size <= 5)
+		medium_sort(ps);
+	else
+		complex_sort(ps);
 }
