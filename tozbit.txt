@@ -1,0 +1,562 @@
+simple_sort
+
+#include "../../includes/push_swap.h"
+
+static void	sort_two(t_push_swap *ps)
+{
+	if (ps->stack_a->top->index > ps->stack_a->top->next->index)
+		sa(ps, 1);
+}
+
+static void	sort_three(t_push_swap *ps)
+{
+	int	a;
+	int	b;
+	int	c;
+
+	a = ps->stack_a->top->index;
+	b = ps->stack_a->top->next->index;
+	c = ps->stack_a->top->next->next->index;
+	if (a > b && b < c && a < c)
+		sa(ps, 1);
+	else if (a > b && b > c)
+	{
+		sa(ps, 1);
+		rra(ps, 1);
+	}
+	else if (a > b && b < c && a > c)
+		ra(ps, 1);
+	else if (a < b && b > c && a < c)
+	{
+		sa(ps, 1);
+		ra(ps, 1);
+	}
+	else if (a < b && b > c && a > c)
+		rra(ps, 1);
+}
+
+static int	find_min_index(t_stack *stack)
+{
+	t_node	*current;
+	int		min_index;
+	int		position;
+	int		min_position;
+
+	current = stack->top;
+	min_index = current->index;
+	min_position = 0;
+	position = 0;
+	while (current)
+	{
+		if (current->index < min_index)
+		{
+			min_index = current->index;
+			min_position = position;
+		}
+		current = current->next;
+		position++;
+	}
+	return (min_position);
+}
+
+static void	move_min_to_top(t_push_swap *ps)
+{
+	int	min_pos;
+	int	size;
+
+	min_pos = find_min_index(ps->stack_a);
+	size = ps->stack_a->size;
+	if (min_pos <= size / 2)
+	{
+		while (min_pos > 0)
+		{
+			ra(ps, 1);
+			min_pos--;
+		}
+	}
+	else
+	{
+		while (min_pos < size)
+		{
+			rra(ps, 1);
+			min_pos++;
+		}
+	}
+}
+
+void	simple_sort(t_push_swap *ps)
+{
+	int	pushed;
+
+	if (ps->stack_a->size == 2)
+		sort_two(ps);
+	else if (ps->stack_a->size == 3)
+		sort_three(ps);
+	else
+	{
+		pushed = 0;
+		while (ps->stack_a->size > 3)
+		{
+			move_min_to_top(ps);
+			pb(ps);
+			pushed++;
+		}
+		sort_three(ps);
+		while (pushed > 0)
+		{
+			pa(ps);
+			pushed--;
+		}
+	}
+}
+
+medium_sort
+
+#include "../../includes/push_swap.h"
+
+static int	get_chunk_size(int stack_size)
+{
+	if (stack_size <= 100)
+		return (stack_size / 5);
+	else
+		return (stack_size / 11);
+}
+
+static int	find_in_chunk(t_stack *stack, int start, int end)
+{
+	t_node	*current;
+
+	current = stack->top;
+	while (current)
+	{
+		if (current->index >= start && current->index < end)
+			return (1);
+		current = current->next;
+	}
+	return (0);
+}
+
+static void	push_chunk(t_push_swap *ps, int start, int end)
+{
+	int	pushed;
+	int	target;
+
+	target = end - start;
+	pushed = 0;
+	while (pushed < target && ps->stack_a->size > 0)
+	{
+		if (ps->stack_a->top->index >= start
+			&& ps->stack_a->top->index < end)
+		{
+			pb(ps);
+			pushed++;
+		}
+		else if (find_in_chunk(ps->stack_a, start, end))
+			ra(ps, 1);
+		else
+			break ;
+	}
+}
+
+static int	find_max_position(t_stack *stack)
+{
+	t_node	*current;
+	int		max_index;
+	int		max_pos;
+	int		pos;
+
+	current = stack->top;
+	max_index = current->index;
+	max_pos = 0;
+	pos = 0;
+	while (current)
+	{
+		if (current->index > max_index)
+		{
+			max_index = current->index;
+			max_pos = pos;
+		}
+		current = current->next;
+		pos++;
+	}
+	return (max_pos);
+}
+
+static void	push_max_to_a(t_push_swap *ps)
+{
+	int	max_pos;
+	int	size;
+
+	size = ps->stack_b->size;
+	max_pos = find_max_position(ps->stack_b);
+	if (max_pos <= size / 2)
+	{
+		while (max_pos > 0)
+		{
+			rb(ps, 1);
+			max_pos--;
+		}
+	}
+	else
+	{
+		while (max_pos < size)
+		{
+			rrb(ps, 1);
+			max_pos++;
+		}
+	}
+	pa(ps);
+}
+
+void	medium_sort(t_push_swap *ps)
+{
+	int	chunk_size;
+	int	i;
+	int	total;
+	int	chunk_end;
+
+	chunk_size = get_chunk_size(ps->stack_a->size);
+	total = ps->stack_a->size;
+	i = 0;
+	while (ps->stack_a->size > 0)
+	{
+		chunk_end = (i + 1) * chunk_size;
+		if (chunk_end > total)
+			chunk_end = total;
+		push_chunk(ps, i * chunk_size, chunk_end);
+		i++;
+	}
+	while (ps->stack_b->size > 0)
+		push_max_to_a(ps);
+}
+
+/* ************************************************************************** */
+complex_sort
+
+
+#include "../../includes/push_swap.h"
+
+static int	find_in_range(t_stack *stack, int start, int end)
+{
+	t_node	*current;
+
+	current = stack->top;
+	while (current)
+	{
+		if (current->index >= start && current->index < end)
+			return (1);
+		current = current->next;
+	}
+	return (0);
+}
+
+static void	push_chunk_to_b(t_push_swap *ps, int chunk_start, int chunk_end)
+{
+	int	pushed;
+
+	pushed = 0;
+	while (pushed < chunk_end - chunk_start && ps->stack_a->size > 0)
+	{
+		if (ps->stack_a->top->index >= chunk_start
+			&& ps->stack_a->top->index < chunk_end)
+		{
+			pb(ps);
+			pushed++;
+		}
+		else if (find_in_range(ps->stack_a, chunk_start, chunk_end))
+			ra(ps, 1);
+		else
+			break ;
+	}
+}
+
+static int	find_max_position(t_stack *stack)
+{
+	t_node	*current;
+	int		max_index;
+	int		max_pos;
+	int		pos;
+
+	current = stack->top;
+	max_index = current->index;
+	max_pos = 0;
+	pos = 0;
+	while (current)
+	{
+		if (current->index > max_index)
+		{
+			max_index = current->index;
+			max_pos = pos;
+		}
+		current = current->next;
+		pos++;
+	}
+	return (max_pos);
+}
+
+static void	push_max_to_a(t_push_swap *ps)
+{
+	int	max_pos;
+	int	size;
+
+	size = ps->stack_b->size;
+	max_pos = find_max_position(ps->stack_b);
+	if (max_pos <= size / 2)
+	{
+		while (max_pos > 0)
+		{
+			rb(ps, 1);
+			max_pos--;
+		}
+	}
+	else
+	{
+		while (max_pos < size)
+		{
+			rrb(ps, 1);
+			max_pos++;
+		}
+	}
+	pa(ps);
+}
+
+void	complex_sort(t_push_swap *ps)
+{
+	int	chunk_size;
+	int	chunk_start;
+	int	chunk_end;
+	int	total;
+
+	if (ps->stack_a->size <= 100)
+		chunk_size = 20;
+	else
+		chunk_size = 35;
+	total = ps->stack_a->size;
+	chunk_start = 0;
+	while (ps->stack_a->size > 0)
+	{
+		chunk_end = chunk_start + chunk_size;
+		if (chunk_end > total)
+			chunk_end = total;
+		push_chunk_to_b(ps, chunk_start, chunk_end);
+		chunk_start = chunk_end;
+	}
+	while (ps->stack_b->size > 0)
+		push_max_to_a(ps);
+}
+
+
+
+/* ************************************************************************** */
+
+adaptive_sor
+
+#include "../../includes/push_swap.h"
+
+double	compute_disorder(t_stack *pa)
+{
+	int		mistakes;
+	int		total_pair;
+	t_node	*node_a;
+	t_node	*node_b;
+
+	if (!pa || pa->size == 0)
+		return (0.0);
+	mistakes = 0;
+	total_pair = 0;
+	node_a = pa->top;
+	while (node_a)
+	{
+		node_b = node_a->next;
+		while (node_b)
+		{
+			total_pair++;
+			if (node_a->value > node_b->value)
+				mistakes++;
+			node_b = node_b->next;
+		}
+		node_a = node_a->next;
+	}
+	if (total_pair == 0)
+		return (0.0);
+	return ((double)mistakes / (double)total_pair);
+}
+
+void	adaptive_sort(t_push_swap *ps)
+{
+	int		size;
+	double	disorder;
+
+	if (!ps || !ps->stack_a)
+		return ;
+	size = ps->stack_a->size;
+	if (size <= 1)
+		return ;
+	else if (size == 2)
+	{
+		if (ps->stack_a->top->index > ps->stack_a->top->next->index)
+			sa(ps, 1);
+	}
+	else if (size == 3)
+	{
+		if (ps->stack_a->size == 3)
+			simple_sort(ps);
+	}
+	else
+	{
+		disorder = compute_disorder(ps->stack_a);
+		ps->disorder = disorder;
+		if (disorder < 0.2 || size <= 20)
+			simple_sort(ps);
+		else if (disorder >= 0.2 && disorder < 0.5)
+			medium_sort(ps);
+		else
+			complex_sort(ps);
+	}
+}
+
+
+
+/* ************************************************************************** */
+
+main 
+
+
+#include "../includes/push_swap.h"
+
+static t_push_swap	*init_push_swap(void)
+{
+	t_push_swap	*ps;
+
+	ps = (t_push_swap *)malloc(sizeof(t_push_swap));
+	if (!ps)
+		return (NULL);
+	ps->stack_a = init_stack();
+	ps->stack_b = init_stack();
+	if (!ps->stack_a || !ps->stack_b)
+	{
+		free_push_swap(ps);
+		return (NULL);
+	}
+	ps->operations = NULL;
+	ps->op_count = 0;
+	ps->disorder = 0.0;
+	ps->strategy = ADAPTIVE;
+	return (ps);
+}
+
+static int	is_flag(char *arg)
+{
+	if (arg[0] == '-' && arg[1] == '-')
+		return (1);
+	return (0);
+}
+
+static int	ft_strcmp_simple(const char *s1, const char *s2)
+{
+	while (*s1 && *s2 && *s1 == *s2)
+	{
+		s1++;
+		s2++;
+	}
+	return (*s1 - *s2);
+}
+
+static void	parse_flags(t_push_swap *ps, int argc, char **argv,
+				int *start, int *bench)
+{
+	int	i;
+
+	*bench = 0;
+	*start = 1;
+	i = 1;
+	while (i < argc && is_flag(argv[i]))
+	{
+		if (ft_strcmp_simple(argv[i], "--bench") == 0)
+			*bench = 1;
+		else if (ft_strcmp_simple(argv[i], "--simple") == 0)
+			ps->strategy = SIMPLE;
+		else if (ft_strcmp_simple(argv[i], "--medium") == 0)
+			ps->strategy = MEDIUM;
+		else if (ft_strcmp_simple(argv[i], "--complex") == 0)
+			ps->strategy = COMPLEX;
+		i++;
+	}
+	*start = i;
+}
+
+static void	run_sort(t_push_swap *ps)
+{
+	if (ps->strategy == SIMPLE)
+		simple_sort(ps);
+	else if (ps->strategy == MEDIUM)
+		medium_sort(ps);
+	else if (ps->strategy == COMPLEX)
+		complex_sort(ps);
+	else
+		adaptive_sort(ps);
+}
+
+static void	print_benchmark(t_push_swap *ps, int bench_mode)
+{
+	int	saved_stdout;
+
+	if (!bench_mode)
+		return ;
+	saved_stdout = dup(1);
+	dup2(2, 1);
+
+	ft_printf("[bench] disorder: %.2f%%\n", ps->disorder * 100.0);
+	ft_printf("[bench] strategy: ");
+	if (ps->strategy == SIMPLE)
+		ft_printf("Simple\n");
+	else if (ps->strategy == MEDIUM)
+		ft_printf("Medium\n");
+	else if (ps->strategy == COMPLEX)
+		ft_printf("Complex\n");
+	else
+		ft_printf("Adaptive / O(n√n)\n");
+	ft_printf("[bench] total_ops: %d\n", ps->op_count);
+	ft_printf("[bench] sa: %d sb: %d ss: %d pa: %d pb: %d\n",
+		ps->ops.sa, ps->ops.sb, ps->ops.ss,
+		ps->ops.pa, ps->ops.pb);
+	ft_printf("[bench] ra: %d rb: %d rr: %d rra: %d rrb: %d rrr: %d\n",
+		ps->ops.ra, ps->ops.rb, ps->ops.rr,
+		ps->ops.rra, ps->ops.rrb, ps->ops.rrr);
+
+	dup2(saved_stdout, 1);
+	close(saved_stdout);
+}
+
+
+int	main(int argc, char **argv)
+{
+	t_push_swap	*ps;
+	int			start;
+	int			bench_mode;
+
+	if (argc < 2)
+		return (0);
+	ps = init_push_swap();
+	if (!ps)
+		print_error();
+	parse_flags(ps, argc, argv, &start, &bench_mode);
+	if (start >= argc)
+	{
+		free_push_swap(ps);
+		return (0);
+	}
+	parse_args_from_index(ps, argc, argv, start);
+	validate_input(ps);
+	if (is_sorted(ps->stack_a))
+	{
+		free_push_swap(ps);
+		return (0);
+	}
+	assign_indices(ps->stack_a);
+	ps->disorder = calculate_disorder(ps->stack_a);
+	run_sort(ps);
+	print_benchmark(ps, bench_mode);
+	free_push_swap(ps);
+	return (0);
+}
